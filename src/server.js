@@ -10,8 +10,8 @@ import helmet from "helmet";
 
 import notesRoutes from "./routes/notesRoutes.js";
 
-import {notFoundHandler} from  "./middleware/notFoundHandler.js";
-import {errorHandler} from "./middleware/errorHandler.js";
+import {notFoundHandler} from  "./middlewaree/notFoundHandler.js";
+import {errorHandler} from "./middlewaree/errorHandler.js";
 
 
 
