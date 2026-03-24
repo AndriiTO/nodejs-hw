@@ -1,4 +1,4 @@
-import  HttpError from "http-errors";
+import  {HttpError} from "http-errors";
 // import { error } from "node:console";
 
 
@@ -9,9 +9,6 @@ if (err instanceof HttpError){
 
 
 const isProd = process.env.NODE_ENV === 'production';
-
-
-
   res.status(500).json({
-    message:  isProd ?  "somesome problem" : err.message, });
+    message:  isProd ?  "some problem" : err.message, });
 };
