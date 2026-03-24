@@ -1,8 +1,18 @@
+
+import 'dotenv/config';
+import {connectMongoDB} from "./db/connectMongoDB.js";
+console.log('MONGODB_URL:', process.env.MONGODB_URL);
 import express from 'express';
 import cors from "cors";
 import pino from "pino-http";
-import 'dotenv/config';
+
 import helmet from "helmet";
+
+import notesRoutes from "./routes/notesRoutes.js";
+
+import {notFoundHandler} from "./Middleware/notFoundHandler.js";
+import {errorHandler} from "./Middleware/errorHandler.js";
+
 
 
 const app = express();
@@ -11,34 +21,24 @@ app.use(helmet());
 // Middleware CORS
 app.use(cors());
 // для парсинга JSON тіла запиту
-app.use(express.json());
+app.use(express.json({
+  limit: '500kb'
+}));
 app.use(pino());
 
-// localhost.get/notes
-app.get('/notes', (req, res) => {
-  res.status(200).json({ message: "Retrieved all notes" });
-});
-
-// GET /notes/:noteId
-app.get('/notes/:noteId', (req, res) => {
-  const { noteId } = req.params;
-  res.status(200).json({ message: `Retrieved note with ID: ${noteId}` });
-});
+app.use(notesRoutes);
 // /test-error
-app.get('/test-error', (req, res) => {
-  throw new Error('Simulated server error');
-});
+// app.get('/test-error', (req, res) => {
+//   throw new Error('Simulated server error');
+// });
 
 // 404 Not Found
-app.use((req, res) => {
-  res.status(404).json({ message: "Route not found" });
-});
+app.use(notFoundHandler);
 
 // error middleware
-app.use((err, req, res, next) => {
-  console.error(err.stack);
-  res.status(500).json({ error: err.message, message: "повідомлення про помилку" });
-});
+app.use(errorHandler);
+
+await connectMongoDB();
 
 app.listen(process.env.PORT || 3000, () => {
   console.log('Server is running on port 3000');
