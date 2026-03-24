@@ -46,3 +46,4 @@ if (!note) {
   }
   res.status(200).json({ message: `Updated note with ID: ${noteId}`, data: note });
  };
+// просто для рк пуш
