@@ -1,5 +1,5 @@
-import  {HttpError} from "http-errors";
-import { error } from "node:console";
+import  HttpError from "http-errors";
+// import { error } from "node:console";
 
 
 export const errorHandler =(err, req, res, next) => {
@@ -10,8 +10,8 @@ if (err instanceof HttpError){
 
 const isProd = process.env.NODE_ENV === 'production';
 
-  {
+
 
   res.status(500).json({
-    message:  isProd ?  "повідомлення про помилку" : error.stack, });
-}};
+    message:  isProd ?  "somesome problem" : err.message, });
+};
