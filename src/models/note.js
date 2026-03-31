@@ -3,19 +3,20 @@
 // tag — приймає одне із фіксованих значень (Work, Personal, Meeting, Shopping, Ideas, Travel, Finance, Health, Important, Todo). Необов’язковий рядок (за замовчуванням Todo)
 
 import { Schema, model} from "mongoose";
-
+import { TAGS } from "../constants/tags.js";
 
 const noteSchema = new Schema({
   title : { type: String, required: true, trim: true },
   content : { type: String, default: "", trim: true },
-  tag : { type: String, enum: ["Work", "Personal", "Meeting", "Shopping", "Ideas", "Travel", "Finance", "Health", "Important", "Todo"], default: "Todo" },
+  tag : { type: String, enum: TAGS, default: "Todo" },
 },
 {
   timestamps: true,
 }
 );
+noteSchema.index({ title: "text", content: "text" });
 const Note = model("Note", noteSchema);
 
-noteSchema.index({ title: "text", content: "text" });
+
 
 export default Note;

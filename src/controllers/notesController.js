@@ -1,4 +1,5 @@
 // import { title } from "node:process";
+// import { text } from "node:stream/consumers";
 import Note from "../models/note.js";
 import createHttpError from "http-errors";
 // import { TAGS } from "../constants/tags.js";
@@ -9,18 +10,15 @@ export const getAllNotes = async (req, res) => {
 
   const notesQuery = Note.find();
   if (tag) {
-    notesQuery.where({ tag }).equals(tag) ;
+    notesQuery.where({ tag });
   }
-  if (search) {
-    notesQuery.where({
-      title: { $regex: search, $options: "i" },
-      content: { $regex: search, $options: "i" },
-    });
-  }
+  if (search && search.trim() !== "") {
+  notesQuery.where({ $text: { $search: search } });
+}
 
 // notesQuery.where({ $text: { $search: search } });
 
-  const [notes, totalNotes] = await Promise.all([
+  const [totalNotes, notes] = await Promise.all([
     notesQuery.clone.countDocuments(),
     notesQuery.skip(skip).limit(perPage),
   ]);
@@ -28,11 +26,14 @@ export const getAllNotes = async (req, res) => {
   // const totalNotes = await Note.find().countDocuments();
   const totalPages = Math.ceil(totalNotes / perPage);
   res.status(200).json({
-    page,
-    perPage,
-    totalPages,
-    notes,
-   totalNotes
+      message: "Retrieved all notes",
+    data: {
+      notes,
+      page,
+      perPage,
+      totalPages,
+      totalNotes,
+    },
   });
 };
 //  message: "Retrieved all notes", data: notes
