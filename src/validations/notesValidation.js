@@ -7,7 +7,7 @@ import { isValidObjectId } from 'mongoose';
 export const getAllNotesSchema = {
   [Segments.QUERY]: Joi.object({
     page: Joi.number().integer().min(1).default(1),
-    perPage: Joi.number().integer().min(5).max(20).default(20),
+    perPage: Joi.number().integer().min(5).max(20).default(10),
     tag: Joi.string().valid(...TAGS),
     search: Joi.string().trim().allow('').optional(),
   })
@@ -34,16 +34,16 @@ export const noteIdSchema = {
 export const updateNoteSchema = {
   [Segments.PARAMS]: Joi.object({
     noteId: Joi.string()
-      .hex()
-      .length(24)
-      .required()
+      // .hex()
+      // .length(24)
+      // .required()
       .custom((value, helpers) => {
         return isValidObjectId(value) ? value : helpers.error('any.invalid');
-      }),
+      }).required()
   }),
   [Segments.BODY]: Joi.object({
     title: Joi.string().min(1),
-    content: Joi.string().allow('').trim().default(''),
+    content: Joi.string().allow('').trim(),
     tag: Joi.string().valid(...TAGS),
   }).min(1),
  ...noteIdSchema
