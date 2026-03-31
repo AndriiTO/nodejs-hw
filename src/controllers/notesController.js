@@ -1,11 +1,41 @@
+// import { title } from "node:process";
 import Note from "../models/note.js";
 import createHttpError from "http-errors";
+// import { TAGS } from "../constants/tags.js";
 
 export const getAllNotes = async (req, res) => {
-  const notes = await Note.find();
-  res.status(200).json({ message: "Retrieved all notes", data: notes });
-};
+  const { page=1, perPage=10, tag, search } = req.query;
+  const skip = (page - 1) * perPage;
 
+  const notesQuery = Note.find();
+  if (tag) {
+    notesQuery.where({ tag }).equals(tag) ;
+  }
+  if (search) {
+    notesQuery.where({
+      title: { $regex: search, $options: "i" },
+      content: { $regex: search, $options: "i" },
+    });
+  }
+
+// notesQuery.where({ $text: { $search: search } });
+
+  const [notes, totalNotes] = await Promise.all([
+    notesQuery.clone.countDocuments(),
+    notesQuery.skip(skip).limit(perPage),
+  ]);
+  // const notes = await Note.find().skip(skip).limit(perPage);
+  // const totalNotes = await Note.find().countDocuments();
+  const totalPages = Math.ceil(totalNotes / perPage);
+  res.status(200).json({
+    page,
+    perPage,
+    totalPages,
+    notes,
+   totalNotes
+  });
+};
+//  message: "Retrieved all notes", data: notes
 export const getNoteById = async (req, res) => {
   const { noteId } = req.params;
   const note = await Note.findById(noteId);

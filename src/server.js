@@ -5,7 +5,7 @@ console.log('MONGODB_URL:', process.env.MONGODB_URL);
 import express from 'express';
 import cors from "cors";
 import pino from "pino-http";
-
+import {errors } from "celebrate";
 import helmet from "helmet";
 
 import notesRoutes from "./routes/notesRoutes.js";
@@ -34,7 +34,7 @@ app.use(notesRoutes);
 
 // 404 Not Found
 app.use(notFoundHandler);
-
+app.use(errors());
 // error middleware
 app.use(errorHandler);
 
