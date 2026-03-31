@@ -16,7 +16,7 @@ export const getAllNotesSchema = {
 export const createNoteSchema = {
   [Segments.BODY]: Joi.object({
     title: Joi.string().min(1).required(),
-    content: Joi.string().allow('').trim().default(''),
+    content: Joi.string().allow('').trim(),
     tag: Joi.string().valid(...TAGS)
   })
 };
@@ -27,7 +27,7 @@ export const noteIdSchema = {
       (value, helpers) => {
         return isValidObjectId(value) ? value : helpers.error('any.invalid');
        }
-    ).length(24).required()
+    ).required()
   })
 };
 
@@ -45,6 +45,8 @@ export const updateNoteSchema = {
     title: Joi.string().min(1),
     content: Joi.string().allow('').trim(),
     tag: Joi.string().valid(...TAGS),
-  }).min(1),
- ...noteIdSchema
+  }).min(1)
+    .required()      // об’єкт має бути присутнім
+  .unknown(false),
+//  ...noteIdSchema
 };
