@@ -5,7 +5,7 @@ import bcrypt from 'bcrypt';
 // import { use } from 'react';
 // import { access } from 'node:fs';
 // import { FIFTEEN_MINUTES, ONE_DAY } from '../constants/time.js';
-import { createSession, setCookies } from '../services/auth.js';
+import { createSession, setSessionCookies } from '../services/auth.js';
 //import { set } from 'mongoose';
 import { Session } from '../models/session.js';
 // import { secureHeapUsed } from 'node:crypto';
@@ -28,9 +28,9 @@ export const registerUser = async (req, res) => {
 
   const newSession = await createSession(newUser._id);
 
-  setCookies(res, newSession);
+  setSessionCookies(res, newSession);
 
-  res.status(201).json({newUser});
+  res.status(201).json(newUser);
 
   // const user = await User.create({ email, password: hashedPassword });
   // res.status(201).json({ status: 201, message: 'User created', userId: user._id });
@@ -49,11 +49,11 @@ export const loginUser = async (req, res) => {
     throw createHttpError(401, 'Invalid email or password');
   }
 
-
+ await Session.deleteMany({ userId: user._id });
 
   const newSession = await createSession(user._id);
 
-  setCookies(res, newSession);
+ setSessionCookies (res, newSession);
 
   res.status(200).json(user);
 };
@@ -69,7 +69,7 @@ export const logoutUser = async (req, res) => {
   res.clearCookie('refreshToken');
 
 
-  res.status(200).send();
+  res.status(204).send();
 };
 
 export const refreshUserSession = async (req, res) => {
@@ -80,26 +80,20 @@ export const refreshUserSession = async (req, res) => {
     refreshToken,
   });
 
-  await Session.findOne({
-    _id: sessionId,
-    refreshToken,
-  });
+
   if (!session) {
     throw createHttpError(401, 'Session not found');
   }
 
-  const isTokenExpired = new Date(session.refreshTokenValidUntil) < new Date(session.refreshTokenValidUntil  );
+  const isTokenExpired = new Date(session.refreshTokenValidUntil) < new Date();
   if (isTokenExpired) {
     throw createHttpError(401, 'Refresh token expired');
   }
-  await session.deleteOne({
-    _id: sessionId,
-    refreshToken,
-  });
+  await session.deleteOne();
 
   const newSession = await createSession(session.userId);
 
-  setCookies(res, newSession);
+  setSessionCookies(res, newSession);
 
   res.status(200).json({ message: 'Session refreshed' });
 
