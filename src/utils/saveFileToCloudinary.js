@@ -7,21 +7,25 @@ cloudinary.config({
   api_secret: process.env.CLOUDINARY_API_SECRET,
 });
 
-export const saveFileToCloudinary = async (buffer, userId) => {
-  return new Promise((resolve, reject) => {
-     const uploadStream = cloudinary.uploader.upload_stream({
-    folder: 'user-notes/avatars',
-    resource_type: 'image',
-    public_id: `avatar_${userId}`,
-    overwrite: true,
-    unique_filename: false,
-  },(error, result) => {
- if (error) {
-     return reject(error);
- }
-       resolve(result);
-  });
+export const saveFileToCloudinary = (buffer) => {
+  if (!buffer) {
+    throw new Error("File buffer is required");
+  }
 
-  uploadStream.end(buffer);
-   });
- };
+  return new Promise((resolve, reject) => {
+    const uploadStream = cloudinary.uploader.upload_stream(
+      {
+        folder: "user-notes/avatars",
+        resource_type: "image",
+        overwrite: true,
+        unique_filename: true,
+      },
+      (error, result) => {
+        if (error) return reject(error);
+        resolve(result);
+      }
+    );
+
+    uploadStream.end(buffer);
+  });
+};
