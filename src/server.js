@@ -15,7 +15,7 @@ import notesRoutes from "./routes/notesRoutes.js";
 import {notFoundHandler} from  "./middleware/notFoundHandler.js";
 import {errorHandler} from "./middleware/errorHandler.js";
 import authRoutes from "./routes/authRoutes.js";
-
+import userRoutes from "./routes/userRoutes.js";
 
 const app = express();
 // const PORT = process.env.PORT ;
@@ -32,6 +32,7 @@ app.use(logger);
 
 app.use(authRoutes);
 app.use(notesRoutes);
+app.use(userRoutes);
 // /test-error
 // app.get('/test-error', (req, res) => {
 //   throw new Error('Simulated server error');
