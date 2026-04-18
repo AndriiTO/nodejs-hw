@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import { updateAvatar } from '../controllers/userController.js';
+import { updateUserAvatar } from '../controllers/userController.js';
 import { authenticate } from '../middlewares/authMiddleware.js';
 import { upload } from '../middlewares/uploadMiddleware.js';
 // import { celebrate } from 'celebrate';
@@ -11,6 +11,6 @@ import { upload } from '../middlewares/uploadMiddleware.js';
 
 const router = Router();
 
-router.patch('/users/me/avatar' , authenticate , upload.single('user_avatar'), updateAvatar);
+router.patch('/users/me/avatar' , authenticate , upload.single('avatar'), updateUserAvatar);
 
 export default router;

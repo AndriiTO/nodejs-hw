@@ -9,7 +9,7 @@ import { createSession, setSessionCookies } from '../services/auth.js';
 //import { set } from 'mongoose';
 import { Session } from '../models/session.js';
 // import { secureHeapUsed } from 'node:crypto';
-import { sendMail } from '../utils/sendMail.js';
+import { sendEmail } from '../utils/sendMail.js';
 // import { JWT_SECRET } from '../config.js';
 import jwt from 'jsonwebtoken';
 // import { template } from 'handlebars';
@@ -135,7 +135,7 @@ export const requestResetEmail = async (req, res) => {
 
 
   try {
-    await sendMail({
+    await sendEmail({
       from: process.env.SMTP_FROM,
       to: user.email,
       subject: 'Password Reset Request',
@@ -144,7 +144,7 @@ export const requestResetEmail = async (req, res) => {
   } catch {
     throw createHttpError(500, 'Failed to send email');
   }
-  res.status(200).json({ message: 'Password reset successfully' });
+  res.status(200).json({ message: 'Password reset email sent successfully' });
 };
 
 

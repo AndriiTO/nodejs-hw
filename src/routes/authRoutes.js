@@ -1,7 +1,7 @@
 import  { Router } from 'express';
 import { celebrate } from 'celebrate';
 import { registerUserSchema, loginUserSchema, requestResetEmailSchema, resetPasswordSchema } from '../validations/authValidation.js';
-import { registerUser, loginUser, logoutUser , refreshUserSession, resetPassword } from '../controllers/authController.js';
+import { registerUser, loginUser, logoutUser , refreshUserSession, resetPassword, requestResetEmail } from '../controllers/authController.js';
 
 // import { authenticate } from '../middleware/authenticate.js';
 
@@ -15,10 +15,10 @@ router.post('/auth/refresh', refreshUserSession);
 router.post(
   '/auth/request-reset-email',
   celebrate(requestResetEmailSchema),
-  requestResetEmailSchema,
+  requestResetEmail,
 );
 router.post(
-  'auth/reset-password',
+  '/auth/reset-password',
   celebrate(resetPasswordSchema),
   resetPassword,
 );
